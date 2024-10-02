@@ -64,9 +64,13 @@ ignore = [
 "tests/*" = ["S101"]
 ```
 
-# mypy
+# Typechecking
 
-[mypy](https://mypy.readthedocs.io/en/stable/) is used for static type checking, and it's configuration and can be edited in `pyproject.toml`.
+Two typechecking options are available, `mypy` or `pyright`.
+
+## mypy
+
+[mypy](https://mypy.readthedocs.io/en/stable/) can be used for static type checking, and its configuration and can be edited in `pyproject.toml`.
 
 ```toml
 [tool.mypy]
@@ -84,9 +88,21 @@ exclude = [
 ]
 ```
 
+## pyright
+
+[pyright](https://github.com/microsoft/pyright) can be used for static type checking, and its configuration and can be edited in `pyproject.toml`:
+
+```toml
+[tool.pyright]
+include = ['{{cookiecutter.project_slug}}']
+typeCheckingMode = "strict"
+venvPath = "."
+venv = ".venv"
+```
+
 # deptry
 
-[deptry](https://github.com/fpgmaas/deptry) is used to check the code for dependency issues, and it's configuration and can be edited in `pyproject.toml`.
+[deptry](https://github.com/fpgmaas/deptry) is used to check the code for dependency issues, and its configuration and can be edited in `pyproject.toml`.
 
 ```toml
 [tool.mypy]

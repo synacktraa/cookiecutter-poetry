@@ -21,7 +21,12 @@ pytest-cov = "^4.0.0"
 {% if cookiecutter.deptry == 'y' -%}
 deptry = "^0.16.2"
 {% endif -%}
+{% if cookiecutter.typechecking == 'mypy' -%}
 mypy = "^1.5.1"
+{% endif -%}
+{% if cookiecutter.typechecking == 'pyright' -%}
+pyright = "^1.1.382"
+{% endif -%}
 pre-commit = "^3.4.0"
 tox = "^4.11.1"
 
@@ -36,6 +41,7 @@ mkdocstrings = {extras = ["python"], version = "^0.26.1"}
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
+{% if cookiecutter.typechecking == 'mypy' -%}
 [tool.mypy]
 files = ["{{cookiecutter.project_slug}}"]
 disallow_untyped_defs = "True"
@@ -45,6 +51,15 @@ check_untyped_defs = "True"
 warn_return_any = "True"
 warn_unused_ignores = "True"
 show_error_codes = "True"
+{%- endif %}
+
+{% if cookiecutter.typechecking == 'pyright' -%}
+[tool.pyright]
+include = ["{{cookiecutter.project_slug}}"]
+typeCheckingMode = "strict"
+venvPath = "."
+venv = ".venv"
+{%- endif %}
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

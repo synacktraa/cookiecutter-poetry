@@ -76,7 +76,8 @@ def test_dont_publish(cookies, tmp_path):
         assert result.exit_code == 0
         assert is_valid_yaml(result.project_path / ".github" / "workflows" / "on-release-main.yml")
         assert not file_contains_text(
-            f"{result.project_path}/.github/workflows/on-release-main.yml", "make build-and-publish"
+            f"{result.project_path}/.github/workflows/on-release-main.yml",
+            "make build-and-publish",
         )
 
 
@@ -86,7 +87,10 @@ def test_mkdocs(cookies, tmp_path):
         assert result.exit_code == 0
         assert is_valid_yaml(result.project_path / ".github" / "workflows" / "main.yml")
         assert is_valid_yaml(result.project_path / ".github" / "workflows" / "on-release-main.yml")
-        assert file_contains_text(f"{result.project_path}/.github/workflows/on-release-main.yml", "mkdocs gh-deploy")
+        assert file_contains_text(
+            f"{result.project_path}/.github/workflows/on-release-main.yml",
+            "mkdocs gh-deploy",
+        )
         assert file_contains_text(f"{result.project_path}/Makefile", "docs:")
         assert os.path.isdir(f"{result.project_path}/docs")
 
@@ -98,7 +102,8 @@ def test_not_mkdocs(cookies, tmp_path):
         assert is_valid_yaml(result.project_path / ".github" / "workflows" / "main.yml")
         assert is_valid_yaml(result.project_path / ".github" / "workflows" / "on-release-main.yml")
         assert not file_contains_text(
-            f"{result.project_path}/.github/workflows/on-release-main.yml", "mkdocs gh-deploy"
+            f"{result.project_path}/.github/workflows/on-release-main.yml",
+            "mkdocs gh-deploy",
         )
         assert not file_contains_text(f"{result.project_path}/Makefile", "docs:")
         assert not os.path.isdir(f"{result.project_path}/docs")
@@ -153,3 +158,37 @@ def test_remove_release_workflow(cookies, tmp_path):
         result = cookies.bake(extra_context={"publish_to": "none", "mkdocs": "n"})
         assert result.exit_code == 0
         assert not os.path.isfile(f"{result.project_path}/.github/workflows/on-release-main.yml")
+
+
+def test_pyright(cookies, tmp_path):
+    with run_within_dir(tmp_path):
+        result = cookies.bake(extra_context={"typechecking": "pyright"})
+        assert result.exit_code == 0
+        # check the toml file
+        assert file_contains_text(f"{result.project_path}/pyproject.toml", "[tool.pyright]")
+        assert file_contains_text(f"{result.project_path}/pyproject.toml", "pyright =")
+        assert not file_contains_text(f"{result.project_path}/pyproject.toml", "[tool.mypy]")
+        assert not file_contains_text(f"{result.project_path}/pyproject.toml", "mypy =")
+        # check the make file
+        assert file_contains_text(f"{result.project_path}/Makefile", "pyright")
+        assert not file_contains_text(f"{result.project_path}/Makefile", "mypy")
+        # check the tox file
+        assert file_contains_text(f"{result.project_path}/tox.ini", "pyright")
+        assert not file_contains_text(f"{result.project_path}/tox.ini", "mypy")
+
+
+def test_mypy(cookies, tmp_path):
+    with run_within_dir(tmp_path):
+        result = cookies.bake(extra_context={"typechecking": "mypy"})
+        assert result.exit_code == 0
+        # check the toml file
+        assert file_contains_text(f"{result.project_path}/pyproject.toml", "[tool.mypy]")
+        assert file_contains_text(f"{result.project_path}/pyproject.toml", "mypy =")
+        assert not file_contains_text(f"{result.project_path}/pyproject.toml", "[tool.pyright]")
+        assert not file_contains_text(f"{result.project_path}/pyproject.toml", "pyright =")
+        # check the make file
+        assert file_contains_text(f"{result.project_path}/Makefile", "mypy")
+        assert not file_contains_text(f"{result.project_path}/Makefile", "pyright")
+        # check the tox file
+        assert file_contains_text(f"{result.project_path}/tox.ini", "mypy")
+        assert not file_contains_text(f"{result.project_path}/tox.ini", "pyright")
