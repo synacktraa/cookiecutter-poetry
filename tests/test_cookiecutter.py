@@ -220,11 +220,7 @@ def test_minor_python_version_prompt(cookies, tmp_path):
 
 def test_test_on_os_prompt(cookies, tmp_path):
     with run_within_dir(tmp_path):
-        result = cookies.bake(extra_context={
-            "test_on_windows": "y",
-            "test_on_macos": "n",
-            "test_on_ubuntu": "y"
-        })
+        result = cookies.bake(extra_context={"test_on_windows": "y", "test_on_macos": "n", "test_on_ubuntu": "y"})
 
         assert result.exit_code == 0
 

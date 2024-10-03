@@ -38,7 +38,7 @@ if not re.match(PROJECT_SLUG_REGEX, project_slug):
 {% if cookiecutter.test_on_windows == "y" %}
 {% set _ = os_matrix.append("windows-latest") %}
 {% endif %}
-{% if cookiecutter.test_on_mac == "y" %}
+{% if cookiecutter.test_on_macos == "y" %}
 {% set _ = os_matrix.append("macos-latest") %}
 {% endif %}
 {% if cookiecutter.test_on_ubuntu == "y" or os_matrix|length == 0 %}
