@@ -20,3 +20,32 @@ if not re.match(PROJECT_SLUG_REGEX, project_slug):
     )
     # Exit to cancel project
     sys.exit(1)
+
+# Update python version matrix
+"""
+{% set python_version_matrix = [] %}
+{% for ver in range(
+    cookiecutter.minor_python_version|replace("3.", "")|int, 13
+) %}
+{% set _ = python_version_matrix.append("3." ~ ver) %}
+{% endfor %}
+{{ cookiecutter.update({"_python_version_matrix": python_version_matrix}) }}
+"""
+
+# Update OS matrix
+"""
+I would like to make the `test_on_os` prompts dependent on `include_github_actions` but
+cookiecutter still hasn't merged the feature where a prompt is dependent on some other prompt value.
+
+{% set os_matrix = [] %}
+{% if cookiecutter.test_on_windows == "y" %}
+{% set _ = os_matrix.append("windows-latest") %}
+{% endif %}
+{% if cookiecutter.test_on_mac == "y" %}
+{% set _ = os_matrix.append("macos-latest") %}
+{% endif %}
+{% if cookiecutter.test_on_ubuntu == "y" or os_matrix|length == 0 %}
+{% set _ = os_matrix.append("ubuntu-latest") %}
+{% endif %}
+{{ cookiecutter.update({"_os_matrix": os_matrix}) }}
+"""
