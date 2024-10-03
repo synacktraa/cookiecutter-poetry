@@ -34,9 +34,6 @@ if not re.match(PROJECT_SLUG_REGEX, project_slug):
 
 # Update OS matrix
 """
-I would like to make the `test_on_os` prompts dependent on `include_github_actions` but
-cookiecutter still hasn't merged the feature where a prompt is dependent on some other prompt value.
-
 {% set os_matrix = [] %}
 {% if cookiecutter.test_on_windows == "y" %}
 {% set _ = os_matrix.append("windows-latest") %}
