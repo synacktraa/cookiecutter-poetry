@@ -192,3 +192,45 @@ def test_mypy(cookies, tmp_path):
         # check the tox file
         assert file_contains_text(f"{result.project_path}/tox.ini", "mypy")
         assert not file_contains_text(f"{result.project_path}/tox.ini", "pyright")
+
+
+def test_branch_name_prompt(cookies, tmp_path):
+    with run_within_dir(tmp_path):
+        result = cookies.bake(extra_context={"branch_name": "master"})
+
+        assert result.exit_code == 0
+        assert os.path.isfile(f"{result.project_path}/.github/workflows/master.yml")
+        assert os.path.isfile(f"{result.project_path}/.github/workflows/on-release-master.yml")
+
+
+def test_minor_python_version_prompt(cookies, tmp_path):
+    with run_within_dir(tmp_path):
+        result = cookies.bake(extra_context={"minor_python_version": "3.10"})
+
+        assert result.exit_code == 0
+
+        main_yml_file = f"{result.project_path}/.github/workflows/main.yml"
+        assert os.path.isfile(main_yml_file)
+        assert not file_contains_text(main_yml_file, "3.8")
+        assert not file_contains_text(main_yml_file, "3.9")
+        assert file_contains_text(main_yml_file, "3.10")
+        assert file_contains_text(main_yml_file, "3.11")
+        assert file_contains_text(main_yml_file, "3.12")
+
+
+def test_test_on_os_prompt(cookies, tmp_path):
+    with run_within_dir(tmp_path):
+        result = cookies.bake(extra_context={
+            "test_on_windows": "y",
+            "test_on_macos": "n",
+            "test_on_ubuntu": "y"
+        })
+
+        assert result.exit_code == 0
+
+        main_yml_file = f"{result.project_path}/.github/workflows/main.yml"
+
+        assert os.path.isfile(main_yml_file)
+        assert file_contains_text(main_yml_file, "windows-latest")
+        assert file_contains_text(main_yml_file, "ubuntu-latest")
+        assert not file_contains_text(main_yml_file, "macos-latest")
