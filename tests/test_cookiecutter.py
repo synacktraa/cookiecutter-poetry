@@ -217,6 +217,18 @@ def test_minor_python_version_prompt(cookies, tmp_path):
         assert file_contains_text(main_yml_file, "3.11")
         assert file_contains_text(main_yml_file, "3.12")
 
+        tox_ini_file = f"{result.project_path}/tox.ini"
+        assert os.path.isfile(tox_ini_file)
+        assert not file_contains_text(tox_ini_file, "3.8: py38")
+        assert not file_contains_text(tox_ini_file, "3.9: py39")
+        assert file_contains_text(tox_ini_file, "3.10: py310")
+        assert file_contains_text(tox_ini_file, "3.11: py311")
+        assert file_contains_text(tox_ini_file, "3.12: py312")
+
+        pyproject_toml_file = f"{result.project_path}/pyproject.toml"
+        assert os.path.isfile(pyproject_toml_file)
+        assert file_contains_text(pyproject_toml_file, ">=3.10,<3.13")
+
 
 def test_test_on_os_prompt(cookies, tmp_path):
     with run_within_dir(tmp_path):
