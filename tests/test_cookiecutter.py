@@ -135,7 +135,10 @@ def test_codecov(cookies, tmp_path):
     with run_within_dir(tmp_path):
         result = cookies.bake()
         assert result.exit_code == 0
-        assert is_valid_yaml(result.project_path / ".github" / "workflows" / "main.yml")
+
+        main_yml_file = f"{result.project_path}/.github/workflows/main.yml"
+        assert is_valid_yaml(main_yml_file)
+        assert file_contains_text(main_yml_file, "--cov --cov-config=pyproject.toml --cov-report=xml")
         assert os.path.isfile(f"{result.project_path}/codecov.yaml")
         assert os.path.isfile(f"{result.project_path}/.github/workflows/validate-codecov-config.yml")
 
@@ -144,7 +147,10 @@ def test_not_codecov(cookies, tmp_path):
     with run_within_dir(tmp_path):
         result = cookies.bake(extra_context={"codecov": "n"})
         assert result.exit_code == 0
-        assert is_valid_yaml(result.project_path / ".github" / "workflows" / "main.yml")
+
+        main_yml_file = f"{result.project_path}/.github/workflows/main.yml"
+        assert is_valid_yaml(main_yml_file)
+        assert not file_contains_text(main_yml_file, "--cov --cov-config=pyproject.toml --cov-report=xml")
         assert not os.path.isfile(f"{result.project_path}/codecov.yaml")
         assert not os.path.isfile(f"{result.project_path}/.github/workflows/validate-codecov-config.yml")
 
